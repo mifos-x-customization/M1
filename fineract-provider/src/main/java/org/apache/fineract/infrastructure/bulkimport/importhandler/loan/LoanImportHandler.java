@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
+import org.apache.fineract.infrastructure.bulkimport.constants.ClientEntityConstants;
 import org.apache.fineract.infrastructure.bulkimport.constants.ClientPersonConstants;
 import org.apache.fineract.infrastructure.bulkimport.constants.LoanConstants;
 import org.apache.fineract.infrastructure.bulkimport.constants.TemplatePopulateImportConstants;
@@ -106,14 +107,18 @@ public class LoanImportHandler implements ImportHandler {
     private DisbursementData readDisbursalData(Row row,String locale,String dateFormat) {
         LocalDate disbursedDate = ImportHandlerUtils.readAsDate(LoanConstants.DISBURSED_DATE_COL, row);
         String linkAccountId=null;
-        String paymentTypeId=null;
         if ( ImportHandlerUtils.readAsLong(LoanConstants.LINK_ACCOUNT_ID, row)!=null)
          linkAccountId =  ImportHandlerUtils.readAsLong(LoanConstants.LINK_ACCOUNT_ID, row).toString();
-        if ( ImportHandlerUtils.readAsLong(LoanConstants.DISBURSED_PAYMENT_TYPE_COL, row)!=null)
-            paymentTypeId = ImportHandlerUtils.readAsLong(LoanConstants.DISBURSED_PAYMENT_TYPE_COL, row).toString();
         
+        String paymentType = ImportHandlerUtils.readAsString(LoanConstants.DISBURSED_PAYMENT_TYPE_COL, row);
+        Long paymentTypeId = null;
+        if (paymentType!=null) {
+            String paymentAr[] = paymentType.split("-");
+            if (paymentAr[1] != null)
+                paymentTypeId = Long.parseLong(paymentAr[1]);
+        }
         if (disbursedDate!=null) {
-            return DisbursementData.importInstance(disbursedDate,linkAccountId,row.getRowNum(),locale,dateFormat, paymentTypeId);
+            return DisbursementData.importInstance(disbursedDate,linkAccountId,row.getRowNum(),locale,dateFormat, paymentTypeId, paymentType);
         }
         return null;
     }
