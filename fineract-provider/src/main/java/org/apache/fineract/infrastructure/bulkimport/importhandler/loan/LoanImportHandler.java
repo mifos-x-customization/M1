@@ -109,7 +109,6 @@ public class LoanImportHandler implements ImportHandler {
         String linkAccountId=null;
         if ( ImportHandlerUtils.readAsLong(LoanConstants.LINK_ACCOUNT_ID, row)!=null)
          linkAccountId =  ImportHandlerUtils.readAsLong(LoanConstants.LINK_ACCOUNT_ID, row).toString();
-        String paymentTypeName = ImportHandlerUtils.readAsString(LoanConstants.DISBURSED_PAYMENT_TYPE_COL, row);
         Long paymentTypeId;
         if(paymentTypeName == null ) {
             paymentTypeId = null;
@@ -117,7 +116,7 @@ public class LoanImportHandler implements ImportHandler {
             paymentTypeId = ImportHandlerUtils.getIdByName(workbook.getSheet(TemplatePopulateImportConstants.EXTRAS_SHEET_NAME), paymentTypeName);
         }
         if (disbursedDate!=null) {
-            return DisbursementData.importInstance(disbursedDate,linkAccountId,row.getRowNum(),locale,dateFormat, paymentTypeId, paymentTypeName);
+            return DisbursementData.importInstance(disbursedDate,linkAccountId,row.getRowNum(),locale,dateFormat, paymentTypeId);
         }
         return null;
     }
