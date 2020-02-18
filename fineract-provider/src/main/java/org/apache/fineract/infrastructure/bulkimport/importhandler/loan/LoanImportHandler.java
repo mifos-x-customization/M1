@@ -109,6 +109,7 @@ public class LoanImportHandler implements ImportHandler {
         String linkAccountId=null;
         if ( ImportHandlerUtils.readAsLong(LoanConstants.LINK_ACCOUNT_ID, row)!=null)
          linkAccountId =  ImportHandlerUtils.readAsLong(LoanConstants.LINK_ACCOUNT_ID, row).toString();
+        String paymentTypeName = ImportHandlerUtils.readAsString(LoanConstants.DISBURSED_PAYMENT_TYPE_COL, row);
         Long paymentTypeId;
         if(paymentTypeName == null ) {
             paymentTypeId = null;
