@@ -109,16 +109,15 @@ public class LoanImportHandler implements ImportHandler {
         String linkAccountId=null;
         if ( ImportHandlerUtils.readAsLong(LoanConstants.LINK_ACCOUNT_ID, row)!=null)
          linkAccountId =  ImportHandlerUtils.readAsLong(LoanConstants.LINK_ACCOUNT_ID, row).toString();
-        
-        String paymentType = ImportHandlerUtils.readAsString(LoanConstants.DISBURSED_PAYMENT_TYPE_COL, row);
-        Long paymentTypeId = null;
-        if (paymentType!=null) {
-            String paymentAr[] = paymentType.split("-");
-            if (paymentAr[1] != null)
-                paymentTypeId = Long.parseLong(paymentAr[1]);
+        String paymentTypeName = ImportHandlerUtils.readAsString(LoanConstants.DISBURSED_PAYMENT_TYPE_COL, row);
+        Long paymentTypeId;
+        if(paymentTypeName == null ) {
+            paymentTypeId = null;
+        } else  {
+            paymentTypeId = ImportHandlerUtils.getIdByName(workbook.getSheet(TemplatePopulateImportConstants.EXTRAS_SHEET_NAME), paymentTypeName);
         }
         if (disbursedDate!=null) {
-            return DisbursementData.importInstance(disbursedDate,linkAccountId,row.getRowNum(),locale,dateFormat, paymentTypeId, paymentType);
+            return DisbursementData.importInstance(disbursedDate,linkAccountId,row.getRowNum(),locale,dateFormat, paymentTypeId, paymentTypeName);
         }
         return null;
     }
