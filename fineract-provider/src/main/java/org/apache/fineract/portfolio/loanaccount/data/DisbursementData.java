@@ -47,7 +47,7 @@ public class DisbursementData implements Comparable<DisbursementData> {
     private transient Long paymentTypeId;
 
     public  static DisbursementData importInstance(LocalDate actualDisbursementDate,String linkAccountId,
-            Integer rowIndex,String locale,String dateFormat, Long paymentTypeId){
+            Integer rowIndex,String locale,String dateFormat){
         return new DisbursementData(actualDisbursementDate,linkAccountId,rowIndex,locale,dateFormat);
     }
     private DisbursementData(LocalDate actualDisbursementDate,String linkAccountId,
