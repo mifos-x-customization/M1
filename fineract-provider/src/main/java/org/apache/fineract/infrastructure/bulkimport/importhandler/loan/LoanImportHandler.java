@@ -109,15 +109,16 @@ public class LoanImportHandler implements ImportHandler {
         String linkAccountId=null;
         if ( ImportHandlerUtils.readAsLong(LoanConstants.LINK_ACCOUNT_ID, row)!=null)
          linkAccountId =  ImportHandlerUtils.readAsLong(LoanConstants.LINK_ACCOUNT_ID, row).toString();
-//        String paymentTypeName = ImportHandlerUtils.readAsString(LoanConstants.DISBURSED_PAYMENT_TYPE_COL, row);
-//        Long paymentTypeId;
-//        if(paymentTypeName == null ) {
-//            paymentTypeId = null;
-//        } else  {
-//            paymentTypeId = ImportHandlerUtils.getIdByName(workbook.getSheet(TemplatePopulateImportConstants.EXTRAS_SHEET_NAME), paymentTypeName);
-//        }
+        String paymentTypeName = ImportHandlerUtils.readAsString(LoanConstants.DISBURSED_PAYMENT_TYPE_COL, row);
+        String paymentTypeId;
+        if(paymentTypeName == null ) {
+            paymentTypeId = null;
+        } else  {
+            Long id = ImportHandlerUtils.getIdByName(workbook.getSheet(TemplatePopulateImportConstants.EXTRAS_SHEET_NAME), paymentTypeName);
+            paymentTypeId = id.toString();
+        }
         if (disbursedDate!=null) {
-            return DisbursementData.importInstance(disbursedDate,linkAccountId,row.getRowNum(),locale,dateFormat);
+            return DisbursementData.importInstance(disbursedDate,linkAccountId,row.getRowNum(),locale,dateFormat, paymentTypeId);
         }
         return null;
     }
@@ -402,6 +403,7 @@ public class LoanImportHandler implements ImportHandler {
 
             DisbursementData disbusalData = disbursalDates.get(rowIndex);
             String linkAccountId = disbusalData.getLinkAccountId();
+            String paymentTypeId = disbusalData.getPaymentTypdId();
             GsonBuilder gsonBuilder = new GsonBuilder();
             gsonBuilder.registerTypeAdapter(LocalDate.class, new DateSerializer(dateFormat));
             if (linkAccountId != null && linkAccountId != "") {
@@ -412,10 +414,11 @@ public class LoanImportHandler implements ImportHandler {
                         .build(); //
                 final CommandProcessingResult loanDisburseToSavingsResult = commandsSourceWritePlatformService.logCommandSource(commandRequest);
             } else {
-                String payload = gsonBuilder.create().toJson(disbusalData);
+                JsonElement payload = gsonBuilder.create().toJsonTree(disbusalData);
+                payload.getAsJsonObject().addProperty("paymentTypeId", paymentTypeId);
                 final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                         .disburseLoanApplication(result.getLoanId()) //
-                        .withJson(payload) //
+                        .withJson(payload.toString()) //
                         .build(); //
                 final CommandProcessingResult loanDisburseResult = commandsSourceWritePlatformService.logCommandSource(commandRequest);
             }

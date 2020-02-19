@@ -98,14 +98,14 @@ public class BulkImportWorkbookServiceImpl implements BulkImportWorkbookService 
                 final String fileType = tika.detect(tikaInputStream);
                 final String fileExtension = Files.getFileExtension(fileDetail.getFileName()).toLowerCase();
                 ImportFormatType format = ImportFormatType.of(fileExtension);
-                if (!fileType.contains("msoffice")) {
-                    if (!fileType.contains("application/vnd.ms-excel")) {
+                
+                    if (!fileType.contains("msoffice") && !fileType.contains("application/vnd.ms-excel")) {
                         
                         throw new GeneralPlatformDomainRuleException("error.msg.invalid.file.extension",
                                 "Uploaded file extension is not recognized.");
                     }
                     
-                }
+                
                 Workbook workbook = new HSSFWorkbook(clonedInputStreamWorkbook);
                 GlobalEntityType entityType=null;
                 int primaryColumn=0;
